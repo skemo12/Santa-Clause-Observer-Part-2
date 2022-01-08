@@ -1,6 +1,8 @@
 package child;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import data.Database;
+import enums.ElvesType;
 import santa.Gift;
 import enums.Category;
 import enums.Cities;
@@ -25,6 +27,53 @@ public class Child implements Comparable<Child> {
     private List<Double> niceScoreHistory;
     private Double assignedBudget;
     private List<Gift> receivedGifts;
+    @JsonIgnore
+    private ElvesType elf;
+    @JsonIgnore
+    private Double niceScoreBonus;
+
+    public void addScoreBonus() {
+        if (Double.compare(this.getNiceScoreBonus(), 0) == 0) {
+            return;
+        }
+        this.setAverageScore(this.getAverageScore() * this
+                .getNiceScoreBonus() / 100);
+    }
+
+    public void elfMagic() {
+        if (elf == ElvesType.BLACK) {
+            assignedBudget = assignedBudget - assignedBudget * 30 / 100;
+        }
+        if (elf == ElvesType.PINK) {
+            assignedBudget = assignedBudget + assignedBudget * 30 / 100;
+        }
+    }
+
+    public void elfYellow(){
+        if (elf == ElvesType.YELLOW) {
+            if (receivedGifts.isEmpty()) {
+                Category favoriteCategory = giftsPreferences.get(0);
+                Gift lowestPricedGift = null;
+                for(Gift gift : Database.getInstance()
+                        .getSanta().getGiftsList()) {
+                    if (gift.getCategory() == favoriteCategory) {
+                        if (!gift.getOrders().equals(gift.getQuantity())) {
+                            if (lowestPricedGift == null) {
+                                lowestPricedGift = gift;
+                            } else if (Double.
+                                    compare(lowestPricedGift.getPrice(),
+                                            gift.getPrice()) > 0) {
+                                lowestPricedGift = gift;
+                            }
+                        }
+                    }
+                }
+                if (lowestPricedGift != null){
+                    receivedGifts.add(lowestPricedGift);
+                }
+            }
+        }
+    }
 
     public Child(final Child child) {
         this.setId(child.getId());
@@ -38,11 +87,14 @@ public class Child implements Comparable<Child> {
         this.setAverageScore(child.getAverageScore());
         this.setAssignedBudget(child.getAssignedBudget());
         this.setNiceScoreHistory(new ArrayList<>(child.getNiceScoreHistory()));
+        this.setElf(child.getElf());
+        this.setNiceScoreBonus(child.niceScoreBonus);
     }
 
     public Child(final Integer id, final Integer age, final Double niceScore,
                  final String firstName, final String lastName,
-                 final Cities city, final List<Category>  giftsPreferences) {
+                 final Cities city, final List<Category>  giftsPreferences,
+                 final ElvesType elf, final Double niceScoreBonus ) {
         this.setId(id);
         this.setAge(age);
         this.setNiceScore(niceScore);
@@ -53,6 +105,8 @@ public class Child implements Comparable<Child> {
         this.setNiceScoreHistory(new ArrayList<>());
         this.getNiceScoreHistory().add(niceScore);
         this.setReceivedGifts(new ArrayList<>());
+        this.setElf(elf);
+        this.setNiceScoreBonus(niceScoreBonus);
     }
 
     /**
@@ -187,6 +241,22 @@ public class Child implements Comparable<Child> {
      */
     public void setReceivedGifts(final List<Gift> receivedGifts) {
         this.receivedGifts = receivedGifts;
+    }
+
+    public ElvesType getElf() {
+        return elf;
+    }
+
+    public void setElf(ElvesType elf) {
+        this.elf = elf;
+    }
+
+    public Double getNiceScoreBonus() {
+        return niceScoreBonus;
+    }
+
+    public void setNiceScoreBonus(Double niceScoreBonus) {
+        this.niceScoreBonus = niceScoreBonus;
     }
 
     /**

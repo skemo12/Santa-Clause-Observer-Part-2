@@ -118,6 +118,7 @@ public final class Database {
                     }
                 }
                 child.setGiftsPreferences(giftPrefs);
+                child.setElf(childUpdate.getElf());
             }
         }
     }

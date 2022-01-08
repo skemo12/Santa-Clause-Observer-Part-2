@@ -43,6 +43,9 @@ public final class Constants {
     public static final Integer KID = 12;
     public static final Integer TEEN = 18;
     public static final Double MAX_GRADE = 10.0;
+    public static final String ELF = "elf";
+    public static final String NICE_SCORE_BONUS = "niceScoreBonus";
+    public static final String QUANTITY = "quantity";
 
 
 

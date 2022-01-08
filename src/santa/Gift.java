@@ -1,5 +1,6 @@
 package santa;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import enums.Category;
 
 /**
@@ -11,12 +12,17 @@ public final class Gift implements Comparable<Gift> {
     private String productName;
     private Double price;
     private Category category;
+    @JsonIgnore
+    private Integer quantity;
+    @JsonIgnore
+    private Integer orders;
 
     public Gift(final String productName, final Double price,
-                final Category category) {
+                final Category category, final Integer quantity) {
         this.setProductName(productName);
         this.setPrice(price);
         this.setCategory(category);
+        this.setQuantity(quantity);
     }
 
     public String getProductName() {
@@ -41,6 +47,22 @@ public final class Gift implements Comparable<Gift> {
 
     public void setCategory(final Category category) {
         this.category = category;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Integer getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Integer orders) {
+        this.orders = orders;
     }
 
     @Override

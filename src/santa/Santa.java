@@ -75,6 +75,7 @@ public final class Santa implements SantaVisitorInterface {
      * Gives every child gifts.
      */
     public void giveGifts() {
+        resetGiftListOrders();
         calculateScores();
         List<Child> children = Database.getInstance().getChildren();
         for (Child child : children) {
@@ -82,8 +83,11 @@ public final class Santa implements SantaVisitorInterface {
         }
         updateBudgetUnit();
         for (Child child : children) {
+            child.addScoreBonus();
             double budgetChild = budgetUnit * child.getAverageScore();
             child.setAssignedBudget(budgetChild);
+            child.elfMagic();
+            budgetChild = child.getAssignedBudget();
             double currBudget = 0.0;
             for (Category giftPreferences : child.getGiftsPreferences()) {
                 if (Double.compare(currBudget, budgetChild) == 0) {
@@ -111,6 +115,7 @@ public final class Santa implements SantaVisitorInterface {
                     break;
                 }
             }
+            child.elfYellow();
         }
     }
 
@@ -166,6 +171,13 @@ public final class Santa implements SantaVisitorInterface {
         }
         return updatedChildren;
     }
+
+    public void resetGiftListOrders() {
+        for (Gift gift : giftsList) {
+            gift.setOrders(0);
+        }
+    }
+
 
     @Override
     public void visit(final Baby child) {

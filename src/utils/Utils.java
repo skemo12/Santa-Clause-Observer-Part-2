@@ -4,6 +4,7 @@ import child.Child;
 import data.Database;
 import enums.Category;
 import enums.Cities;
+import enums.ElvesType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,5 +99,19 @@ public final class Utils {
             categories.add(Utils.getInstance().stringToCategory(element));
         }
         return categories;
+    }
+
+    /**
+     * Converts string to Elf ENUM.
+     * @param elf string to be converted
+     */
+    public ElvesType stringToElf(String elf) {
+        return switch (elf) {
+            case "yellow" -> ElvesType.YELLOW;
+            case "black" -> ElvesType.BLACK;
+            case "pink" -> ElvesType.PINK;
+            case "white" -> ElvesType.WHITE;
+            default -> null;
+        };
     }
 }

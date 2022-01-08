@@ -3,6 +3,7 @@ package fileio;
 import common.Constants;
 import data.Database;
 import child.Child;
+import enums.ElvesType;
 import santa.Gift;
 import annualchanges.AnnualChanges;
 import annualchanges.ChildUpdate;
@@ -88,21 +89,27 @@ public final class InputLoader {
                     giftPreferences.add(((String) gift));
                 }
                 children.add(new Child(
-                        ((Long) ((JSONObject) jsonChild)
-                                .get(Constants.ID)).intValue(),
-                        ((Long) ((JSONObject) jsonChild)
-                                .get(Constants.AGE)).intValue(),
-                        ((Long) ((JSONObject) jsonChild)
-                                .get(Constants.NICE_SCORE)).doubleValue(),
-                        (String) ((JSONObject) jsonChild)
-                                .get(Constants.FIRST_NAME),
-                        (String) ((JSONObject) jsonChild)
-                                .get(Constants.LAST_NAME),
-                        Utils.getInstance().stringToCity(
+                                ((Long) ((JSONObject) jsonChild)
+                                        .get(Constants.ID)).intValue(),
+                                ((Long) ((JSONObject) jsonChild)
+                                        .get(Constants.AGE)).intValue(),
+                                ((Long) ((JSONObject) jsonChild)
+                                        .get(Constants.NICE_SCORE)).doubleValue(),
                                 (String) ((JSONObject) jsonChild)
-                                        .get(Constants.CITY)),
-                        Utils.getInstance()
-                                .stringListToCategoryList(giftPreferences)));
+                                        .get(Constants.FIRST_NAME),
+                                (String) ((JSONObject) jsonChild)
+                                        .get(Constants.LAST_NAME),
+                                Utils.getInstance().stringToCity(
+                                        (String) ((JSONObject) jsonChild)
+                                                .get(Constants.CITY)),
+                                Utils.getInstance()
+                                        .stringListToCategoryList(giftPreferences),
+                                Utils.getInstance().stringToElf((String)
+                                ((JSONObject) jsonChild).get(Constants.ELF)),
+                                ((Long) ((JSONObject) jsonChild)
+                                        .get(Constants.NICE_SCORE_BONUS))
+                                        .doubleValue())
+                        );
             }
         }
         return children;
@@ -122,7 +129,10 @@ public final class InputLoader {
                                 .get(Constants.PRICE)).doubleValue(),
                         Utils.getInstance().stringToCategory(
                                 (String) ((JSONObject) jsonGift)
-                                .get(Constants.CATEGORY))
+                                .get(Constants.CATEGORY)),
+                        ((Long) ((JSONObject) jsonGift)
+                                .get(Constants.QUANTITY)).intValue()
+
                 );
                 giftList.add(gift);
             }
@@ -178,10 +188,15 @@ public final class InputLoader {
                     for (Object jsonGiftPreference : jsonGiftsPreferences) {
                         giftsPreferences.add((String) jsonGiftPreference);
                     }
+
+                    ElvesType newElf = Utils.getInstance().stringToElf(
+                                    (String)
+                                            ((JSONObject) jsonChildUpdate)
+                                                    .get(Constants.ELF));
                     childrenUpdates.add(new ChildUpdate(id, niceScore,
                             Utils.getInstance()
                                     .stringListToCategoryList(
-                                            giftsPreferences)));
+                                            giftsPreferences), newElf));
                 }
                 annualChanges.add(new AnnualChanges(newSantaBudget, newGifts,
                         newChildren, childrenUpdates));
