@@ -48,6 +48,7 @@ public final class Main {
             }
             // Read input file
             String inputFilename = Constants.INPUT_PATH + path;
+            String customIN = "tests/test2.json";
             InputLoader inputLoader = new InputLoader(inputFilename);
             inputLoader.readData();
 
@@ -55,6 +56,7 @@ public final class Main {
             String index = path.replaceAll("[^0-9]", "");
             String outputFilename = Constants.OUTPUT_PATH + index
                     + Constants.JSON_EXTENSION;
+            String customOUT = "output/out_2.json";
             MyWriter writer = new MyWriter(outputFilename);
 
             // Running for number of years + round 0

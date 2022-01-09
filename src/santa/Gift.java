@@ -14,8 +14,6 @@ public final class Gift implements Comparable<Gift> {
     private Category category;
     @JsonIgnore
     private Integer quantity;
-    @JsonIgnore
-    private Integer orders;
 
     public Gift(final String productName, final Double price,
                 final Category category, final Integer quantity) {
@@ -55,14 +53,6 @@ public final class Gift implements Comparable<Gift> {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public Integer getOrders() {
-        return orders;
-    }
-
-    public void setOrders(Integer orders) {
-        this.orders = orders;
     }
 
     @Override
