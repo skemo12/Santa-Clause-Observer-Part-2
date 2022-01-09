@@ -6,11 +6,13 @@ import child.Kid;
 import child.Teen;
 import data.Database;
 import enums.Category;
+import enums.Cities;
 import enums.CityStrategyEnum;
 import interfaces.SantaVisitorInterface;
 import utils.Utils;
 import common.Constants;
 
+import javax.xml.stream.events.EntityReference;
 import java.util.*;
 
 /**
@@ -73,7 +75,6 @@ public final class Santa implements SantaVisitorInterface {
      * Gives every child gifts.
      */
     public void giveGifts(CityStrategyEnum strategyEnum) {
-        //resetGiftListOrders();
         calculateScores();
         List<Child> children = Database.getInstance().getChildren();
         for (Child child : children) {
@@ -83,6 +84,11 @@ public final class Santa implements SantaVisitorInterface {
         if (strategyEnum == CityStrategyEnum.NICE_SCORE) {
             children.sort((o1, o2) -> Integer.compare(Double
                     .compare(o2.getAverageScore(), o1.getAverageScore()), 0));
+        }
+        List<Cities> sortedCities = null;
+        if (strategyEnum == CityStrategyEnum.NICE_SCORE_CITY) {
+            newMethod();
+            return;
         }
         updateBudgetUnit();
         for (Child child : children) {
@@ -180,6 +186,107 @@ public final class Santa implements SantaVisitorInterface {
             }
         }
         return updatedChildren;
+    }
+    public List<Cities> sortCities() {
+        HashMap<Cities, Double> citiesScoreMap = new HashMap<>();
+        List<Cities> sortedCities = new ArrayList<>();
+        for (Child child : Database.getInstance().getChildren()) {
+            if (!citiesScoreMap.containsKey(child.getCity())) {
+                citiesScoreMap.put(child.getCity(), 0.0);
+            }
+        }
+        for (Map.Entry<Cities, Double> mapEntry : citiesScoreMap.entrySet()) {
+            Double average = 0.0;
+            Integer divider = 0;
+            for (Child child : Database.getInstance().getChildren()) {
+                if (child.getCity() == mapEntry.getKey()) {
+                    average += child.getAverageScore();
+                    divider++;
+                }
+            }
+            average = average / divider ;
+            mapEntry.setValue(average);
+        }
+        while (!citiesScoreMap.isEmpty()) {
+            Map.Entry<Cities, Double> maxEntry = null;
+            for (Map.Entry<Cities, Double> mapEntry : citiesScoreMap.entrySet()) {
+                if (maxEntry == null || mapEntry.getValue().compareTo(maxEntry.getValue()) > 0)
+                {
+                    maxEntry = mapEntry;
+                }
+            }
+            sortedCities.add(maxEntry.getKey());
+            citiesScoreMap.remove(maxEntry.getKey());
+        }
+
+        return sortedCities;
+    }
+
+    public LinkedHashMap<Cities, List<Child>> citiesStrategy() {
+        LinkedHashMap<Cities, List<Child>> map = new LinkedHashMap<>();
+        List<Cities> sortedCities = sortCities();
+
+        for (Cities city : sortedCities) {
+            List<Child> children = new ArrayList<>();
+            for (Child child : Database.getInstance().getChildren()) {
+                if (child.getCity() == city) {
+                    children.add(child);
+                }
+            }
+            map.put(city, children);
+        }
+
+        return map;
+    }
+
+    public void newMethod() {
+        LinkedHashMap<Cities, List<Child>> map = citiesStrategy();
+        updateBudgetUnit();
+        for (Map.Entry<Cities, List<Child>> entry : map.entrySet()) {
+            List<Child> children = entry.getValue();
+            for (Child child : children) {
+                child.addScoreBonus();
+                double budgetChild = budgetUnit * child.getAverageScore();
+                child.setAssignedBudget(budgetChild);
+                child.elfMagic();
+                budgetChild = child.getAssignedBudget();
+                double currBudget = 0.0;
+                for (Category giftPreferences : child.getGiftsPreferences()) {
+                    if (Double.compare(currBudget, budgetChild) == 0) {
+                        break;
+                    }
+                    List<Gift> giftsPerCategory = new ArrayList<>();
+                    for (Gift gift : giftsList) {
+                        if (gift.getCategory() == giftPreferences) {
+                            double auxBudget = gift.getPrice() + currBudget;
+                            if (Double.compare(auxBudget, budgetChild) < 0) {
+                                giftsPerCategory.add(gift);
+
+                                if (Double.compare(currBudget, budgetChild) == 0) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (!giftsPerCategory.isEmpty()) {
+                        Collections.sort(giftsPerCategory);
+                        for (Gift gift : giftsPerCategory) {
+                            if (gift.getQuantity() != 0){
+                                child.getReceivedGifts().add(gift);
+                                currBudget += gift.getPrice();
+                                gift.setQuantity(gift.getQuantity() - 1);
+                                break;
+                            }
+                        }
+                    }
+                    if (Double.compare(currBudget, budgetChild) == 0) {
+                        break;
+                    }
+                }
+                child.elfYellow();
+            }
+            Collections.sort(Database.getInstance().getChildren());
+        }
     }
 
     @Override
