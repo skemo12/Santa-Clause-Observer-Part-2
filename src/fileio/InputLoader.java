@@ -3,6 +3,7 @@ package fileio;
 import common.Constants;
 import data.Database;
 import child.Child;
+import enums.CityStrategyEnum;
 import enums.ElvesType;
 import santa.Gift;
 import annualchanges.AnnualChanges;
@@ -198,8 +199,15 @@ public final class InputLoader {
                                     .stringListToCategoryList(
                                             giftsPreferences), newElf));
                 }
+                CityStrategyEnum strategyEnum = CityStrategyEnum.ID;
+                if (((JSONObject) jsonAnnualChange)
+                        .get(Constants.STRATEGY) != null) {
+                    strategyEnum = Utils.getInstance().stringToStrategy(
+                            (String) ((JSONObject) jsonAnnualChange)
+                                    .get(Constants.STRATEGY) );
+                }
                 annualChanges.add(new AnnualChanges(newSantaBudget, newGifts,
-                        newChildren, childrenUpdates));
+                        newChildren, childrenUpdates, strategyEnum));
             }
         }
         return annualChanges;

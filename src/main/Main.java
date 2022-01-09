@@ -1,12 +1,15 @@
 package main;
 
 import checker.Checker;
+import child.Child;
 import common.Constants;
 import data.Database;
+import enums.CityStrategyEnum;
 import fileio.InputLoader;
 import fileio.MyWriter;
 
 import java.io.File;
+import java.util.Collections;
 
 /**
  * Class used to run the code
@@ -48,22 +51,26 @@ public final class Main {
             }
             // Read input file
             String inputFilename = Constants.INPUT_PATH + path;
-            String customIN = "tests/test2.json";
-            InputLoader inputLoader = new InputLoader(inputFilename);
+            String customIN = "tests/test13.json";
+            InputLoader inputLoader = new InputLoader(customIN);
             inputLoader.readData();
 
             // Prepare output file
             String index = path.replaceAll("[^0-9]", "");
             String outputFilename = Constants.OUTPUT_PATH + index
                     + Constants.JSON_EXTENSION;
-            String customOUT = "output/out_2.json";
-            MyWriter writer = new MyWriter(outputFilename);
+            String customOUT = "output/out_13.json";
+            MyWriter writer = new MyWriter(customOUT);
 
             // Running for number of years + round 0
             for (int i = 0; i <= Database.getInstance().
                     getNumberOfYears(); i++) {
-
-                Database.getInstance().getSanta().giveGifts();
+                CityStrategyEnum strategyEnum = CityStrategyEnum.ID;
+                if (i != 0) {
+                    strategyEnum = Database.getInstance()
+                            .getAnnualChanges().get(i - 1).getStrategy();
+                }
+                Database.getInstance().getSanta().giveGifts(strategyEnum);
                 Database.getInstance().saveYear();
                 if (i != Database.getInstance().getNumberOfYears()) {
                     Database.getInstance().updateDatabaseByYear(i);

@@ -4,6 +4,7 @@ import child.Child;
 import data.Database;
 import enums.Category;
 import enums.Cities;
+import enums.CityStrategyEnum;
 import enums.ElvesType;
 
 import java.util.ArrayList;
@@ -111,6 +112,19 @@ public final class Utils {
             case "black" -> ElvesType.BLACK;
             case "pink" -> ElvesType.PINK;
             case "white" -> ElvesType.WHITE;
+            default -> null;
+        };
+    }
+
+    /**
+     * Converts string to Elf ENUM.
+     * @param strategy string to be converted
+     */
+    public CityStrategyEnum stringToStrategy(String strategy) {
+        return switch (strategy) {
+            case "niceScoreCity" -> CityStrategyEnum.NICE_SCORE_CITY;
+            case "id" -> CityStrategyEnum.ID;
+            case "niceScore" -> CityStrategyEnum.NICE_SCORE;
             default -> null;
         };
     }

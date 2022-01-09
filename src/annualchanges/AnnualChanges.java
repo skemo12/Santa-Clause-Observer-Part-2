@@ -1,6 +1,7 @@
 package annualchanges;
 
 import child.Child;
+import enums.CityStrategyEnum;
 import santa.Gift;
 
 import java.util.List;
@@ -14,14 +15,17 @@ public final class AnnualChanges {
     private List<Gift> newGifts;
     private List<Child> newChildren;
     private List<ChildUpdate> childrenUpdates;
+    private CityStrategyEnum strategy;
 
     public AnnualChanges(final Double newSantaBudget, final List<Gift> newGifts,
                          final List<Child> newChildren,
-                         final List<ChildUpdate> childrenUpdates) {
+                         final List<ChildUpdate> childrenUpdates,
+                         final CityStrategyEnum strategy) {
         this.setNewSantaBudget(newSantaBudget);
         this.setNewGifts(newGifts);
         this.setNewChildren(newChildren);
         this.setChildrenUpdates(childrenUpdates);
+        this.setStrategy(strategy);
     }
 
     public Double getNewSantaBudget() {
@@ -56,4 +60,11 @@ public final class AnnualChanges {
         this.childrenUpdates = childrenUpdates;
     }
 
+    public CityStrategyEnum getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(CityStrategyEnum strategy) {
+        this.strategy = strategy;
+    }
 }

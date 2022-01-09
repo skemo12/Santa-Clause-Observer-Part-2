@@ -6,14 +6,12 @@ import child.Kid;
 import child.Teen;
 import data.Database;
 import enums.Category;
+import enums.CityStrategyEnum;
 import interfaces.SantaVisitorInterface;
 import utils.Utils;
 import common.Constants;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * Class that stores the data of Santa, implements SantaVisitorInterface
@@ -74,20 +72,25 @@ public final class Santa implements SantaVisitorInterface {
     /**
      * Gives every child gifts.
      */
-    public void giveGifts() {
+    public void giveGifts(CityStrategyEnum strategyEnum) {
         //resetGiftListOrders();
         calculateScores();
         List<Child> children = Database.getInstance().getChildren();
         for (Child child : children) {
             child.getReceivedGifts().clear();
         }
+        Collections.sort(children);
+        if (strategyEnum == CityStrategyEnum.NICE_SCORE) {
+            children.sort((o1, o2) -> Integer.compare(Double
+                    .compare(o2.getAverageScore(), o1.getAverageScore()), 0));
+        }
         updateBudgetUnit();
         for (Child child : children) {
             child.addScoreBonus();
             double budgetChild = budgetUnit * child.getAverageScore();
             child.setAssignedBudget(budgetChild);
-            //child.elfMagic();
-            //budgetChild = child.getAssignedBudget();
+            child.elfMagic();
+            budgetChild = child.getAssignedBudget();
             double currBudget = 0.0;
             for (Category giftPreferences : child.getGiftsPreferences()) {
                 if (Double.compare(currBudget, budgetChild) == 0) {
@@ -112,8 +115,7 @@ public final class Santa implements SantaVisitorInterface {
                         if (gift.getQuantity() != 0){
                             child.getReceivedGifts().add(gift);
                             currBudget += gift.getPrice();
-                            gift.setQuantity(giftsPerCategory.get(0)
-                                    .getQuantity() - 1);
+                            gift.setQuantity(gift.getQuantity() - 1);
                             break;
                         }
                     }
@@ -122,8 +124,9 @@ public final class Santa implements SantaVisitorInterface {
                     break;
                 }
             }
-            //child.elfYellow();
+            child.elfYellow();
         }
+        Collections.sort(Database.getInstance().getChildren());
     }
 
     /**
