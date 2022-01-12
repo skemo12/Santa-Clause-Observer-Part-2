@@ -39,10 +39,10 @@ public class Child implements Comparable<Child> {
         }
         double newAverageScore = this.getAverageScore() * this
                 .getNiceScoreBonus() / 100;
-        if (newAverageScore > 10.0) {
-            newAverageScore = 10.0;
+        this.setAverageScore(this.getAverageScore() + newAverageScore);
+        if (this.getAverageScore() > 10.0) {
+            this.setAverageScore(10.0);
         }
-        this.setAverageScore(newAverageScore);
     }
 
     public void elfMagic() {
@@ -62,18 +62,18 @@ public class Child implements Comparable<Child> {
                 for(Gift gift : Database.getInstance()
                         .getSanta().getGiftsList()) {
                     if (gift.getCategory() == favoriteCategory) {
-                        if (!gift.getQuantity().equals(0)) {
-                            if (lowestPricedGift == null) {
-                                lowestPricedGift = gift;
-                            } else if (Double.
-                                    compare(lowestPricedGift.getPrice(),
-                                            gift.getPrice()) > 0) {
-                                lowestPricedGift = gift;
-                            }
+                        if (lowestPricedGift == null) {
+                            lowestPricedGift = gift;
+                        } else if (Double.
+                                compare(lowestPricedGift.getPrice(),
+                                        gift.getPrice()) > 0) {
+                            lowestPricedGift = gift;
                         }
+
                     }
                 }
-                if (lowestPricedGift != null){
+                if (lowestPricedGift != null &&
+                        !lowestPricedGift.getQuantity().equals(0)){
                     lowestPricedGift.setQuantity(
                             lowestPricedGift.getQuantity() - 1);
                     receivedGifts.add(lowestPricedGift);

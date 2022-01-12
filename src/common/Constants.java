@@ -47,13 +47,7 @@ public final class Constants {
     public static final String NICE_SCORE_BONUS = "niceScoreBonus";
     public static final String QUANTITY = "quantity";
     public static final String STRATEGY = "strategy";
-
-
-
-
-
-
-
+    
     private Constants() {
         //constructor for checkstyle
     }

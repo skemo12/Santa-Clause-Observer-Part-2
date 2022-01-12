@@ -51,7 +51,7 @@ public final class Main {
             }
             // Read input file
             String inputFilename = Constants.INPUT_PATH + path;
-            String customIN = "tests/test14.json";
+            String customIN = "tests/test28.json";
             InputLoader inputLoader = new InputLoader(customIN);
             inputLoader.readData();
 
@@ -59,7 +59,7 @@ public final class Main {
             String index = path.replaceAll("[^0-9]", "");
             String outputFilename = Constants.OUTPUT_PATH + index
                     + Constants.JSON_EXTENSION;
-            String customOUT = "output/out_14.json";
+            String customOUT = "output/out_28.json";
             MyWriter writer = new MyWriter(customOUT);
 
             // Running for number of years + round 0

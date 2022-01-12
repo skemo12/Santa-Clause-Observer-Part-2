@@ -79,20 +79,20 @@ public final class Santa implements SantaVisitorInterface {
         List<Child> children = Database.getInstance().getChildren();
         for (Child child : children) {
             child.getReceivedGifts().clear();
+            child.addScoreBonus();
         }
         Collections.sort(children);
+        updateBudgetUnit();
         if (strategyEnum == CityStrategyEnum.NICE_SCORE) {
             children.sort((o1, o2) -> Integer.compare(Double
                     .compare(o2.getAverageScore(), o1.getAverageScore()), 0));
         }
-        List<Cities> sortedCities = null;
         if (strategyEnum == CityStrategyEnum.NICE_SCORE_CITY) {
             newMethod();
             return;
         }
-        updateBudgetUnit();
+
         for (Child child : children) {
-            child.addScoreBonus();
             double budgetChild = budgetUnit * child.getAverageScore();
             child.setAssignedBudget(budgetChild);
             child.elfMagic();
@@ -245,7 +245,6 @@ public final class Santa implements SantaVisitorInterface {
         for (Map.Entry<Cities, List<Child>> entry : map.entrySet()) {
             List<Child> children = entry.getValue();
             for (Child child : children) {
-                child.addScoreBonus();
                 double budgetChild = budgetUnit * child.getAverageScore();
                 child.setAssignedBudget(budgetChild);
                 child.elfMagic();
