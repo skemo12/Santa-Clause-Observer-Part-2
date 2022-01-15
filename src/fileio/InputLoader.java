@@ -96,17 +96,17 @@ public final class InputLoader {
                                     .get(Constants.LAST_NAME),
                                 (String) ((JSONObject) jsonChild)
                                         .get(Constants.FIRST_NAME),
-                                Utils.getInstance().stringToCity(
+                                Utils.stringToCity(
                                         (String) ((JSONObject) jsonChild)
                                                 .get(Constants.CITY)),
                                 ((Long) ((JSONObject) jsonChild)
                                     .get(Constants.AGE)).intValue(),
-                                Utils.getInstance()
-                                        .stringListToCategoryList(giftPreferences),
+                                Utils.stringListToCategoryList(giftPreferences),
                                 ((Long) ((JSONObject) jsonChild)
                                     .get(Constants.NICE_SCORE)).doubleValue())
-                        .elfType(Utils.getInstance().stringToElf((String)
-                                        ((JSONObject) jsonChild).get(Constants.ELF)))
+                        .elfType(Utils.stringToElf((String)
+                                        ((JSONObject) jsonChild)
+                                                .get(Constants.ELF)))
                         .niceScoreBonus(((Long) ((JSONObject) jsonChild)
                                 .get(Constants.NICE_SCORE_BONUS))
                                 .doubleValue())
@@ -123,18 +123,16 @@ public final class InputLoader {
         final List<Gift> giftList = new ArrayList<>();
         if (jsonSantaGiftsList != null) {
             for (final Object jsonGift : jsonSantaGiftsList) {
-                final Gift gift = new Gift(
+                final Gift gift = new Gift.Builder(
                         (String) ((JSONObject) jsonGift)
                                 .get(Constants.PRODUCT_NAME),
                         ((Long) ((JSONObject) jsonGift)
                                 .get(Constants.PRICE)).doubleValue(),
-                        Utils.getInstance().stringToCategory(
-                                (String) ((JSONObject) jsonGift)
-                                .get(Constants.CATEGORY)),
-                        ((Long) ((JSONObject) jsonGift)
-                                .get(Constants.QUANTITY)).intValue()
-
-                );
+                        Utils.stringToCategory((String) ((JSONObject) jsonGift)
+                                .get(Constants.CATEGORY)))
+                        .quantity(((Long) ((JSONObject) jsonGift)
+                                .get(Constants.QUANTITY)).intValue())
+                        .build();
                 giftList.add(gift);
             }
         }
@@ -190,21 +188,18 @@ public final class InputLoader {
                         giftsPreferences.add((String) jsonGiftPreference);
                     }
 
-                    final ElvesType newElf = Utils.getInstance().stringToElf(
-                                    (String)
-                                            ((JSONObject) jsonChildUpdate)
-                                                    .get(Constants.ELF));
+                    final ElvesType newElf = Utils.stringToElf(
+                            (String) ((JSONObject) jsonChildUpdate)
+                                    .get(Constants.ELF));
                     childrenUpdates.add(new ChildUpdate.Builder(id, niceScore,
-                            Utils.getInstance()
-                                    .stringListToCategoryList(
-                                            giftsPreferences))
+                            Utils.stringListToCategoryList(giftsPreferences))
                             .elfType(newElf)
                             .build());
                 }
                 CityStrategyEnum strategyEnum = CityStrategyEnum.ID;
                 if (((JSONObject) jsonAnnualChange)
                         .get(Constants.STRATEGY) != null) {
-                    strategyEnum = Utils.getInstance().stringToStrategy(
+                    strategyEnum = Utils.stringToStrategy(
                             (String) ((JSONObject) jsonAnnualChange)
                                     .get(Constants.STRATEGY));
                 }

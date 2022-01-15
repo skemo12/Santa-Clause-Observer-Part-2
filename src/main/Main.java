@@ -6,6 +6,8 @@ import data.Database;
 import enums.CityStrategyEnum;
 import fileio.InputLoader;
 import fileio.MyWriter;
+import utils.Utils;
+import yearsimulation.YearSimulation;
 
 import java.io.File;
 
@@ -32,6 +34,7 @@ public final class Main {
             System.out.println("No input data");
             return;
         }
+
         final File outputDir = new File(Constants.OUTPUT_DIR);
         //Creating a folder using mkdir() method
         if (!outputDir.exists()) {
@@ -42,42 +45,45 @@ public final class Main {
         }
 
         for (final String path : paths) {
-
-            // Check whether file is actually a test file
-            if (!path.startsWith(Constants.TEST_NAME)) {
-                continue;
-            }
-            // Read input file
-            final String inputFilename = Constants.INPUT_PATH + path;
-            final String customIN = "tests/test28.json";
-            final InputLoader inputLoader = new InputLoader(inputFilename);
-            inputLoader.readData();
-
-            // Prepare output file
-            final String index = path.replaceAll("[^0-9]", "");
-            final String outputFilename = Constants.OUTPUT_PATH + index
-                    + Constants.JSON_EXTENSION;
-            final String customOUT = "output/out_28.json";
-            final MyWriter writer = new MyWriter(outputFilename);
-
-            // Running for number of years + round 0
-            for (int i = 0; i <= Database.getInstance().
-                    getNumberOfYears(); i++) {
-                CityStrategyEnum strategyEnum = CityStrategyEnum.ID;
-                if (i != 0) {
-                    strategyEnum = Database.getInstance()
-                            .getAnnualChanges().get(i - 1).getStrategy();
-                }
-                Database.getInstance().getSanta().giveGifts(strategyEnum);
-                Database.getInstance().saveYear();
-                if (i != Database.getInstance().getNumberOfYears()) {
-                    Database.getInstance().updateDatabaseByYear(i);
-                }
-
-            }
-            writer.closeJSON();
-            Database.renewDatabase();
+            simulateAllYears(path);
         }
         Checker.calculateScore();
+    }
+
+    private static void simulateAllYears(final String path) {
+        // Check whether file is actually a test file
+        if (!path.startsWith(Constants.TEST_NAME)) {
+            return;
+        }
+        // Read input file
+        final String inputFilename = Constants.INPUT_PATH + path;
+        final InputLoader inputLoader = new InputLoader(inputFilename);
+        inputLoader.readData();
+
+        // Prepare output file
+        final String index = path.replaceAll("[^0-9]", "");
+        final String outputFilename = Constants.OUTPUT_PATH + index
+                + Constants.JSON_EXTENSION;
+        final MyWriter writer = new MyWriter(outputFilename);
+
+        // Running for number of years + round 0
+        for (int i = 0; i <= Database.getInstance().
+                getNumberOfYears(); i++) {
+            CityStrategyEnum strategyEnum = CityStrategyEnum.ID;
+            if (i != 0) {
+                strategyEnum = Database.getInstance()
+                        .getAnnualChanges().get(i - 1).getStrategy();
+            }
+
+            YearSimulation yearSimulation = new YearSimulation(
+                    Utils.convertStrategyEnumToStrategy(strategyEnum));
+            yearSimulation.simulateYear();
+            Database.getInstance().saveYear();
+            if (i != Database.getInstance().getNumberOfYears()) {
+                Database.getInstance().updateDatabaseByYear(i);
+            }
+        }
+        writer.closeJSON();
+        Database.renewDatabase();
     }
 }

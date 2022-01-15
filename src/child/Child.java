@@ -6,6 +6,8 @@ import data.Database;
 import enums.Category;
 import enums.Cities;
 import enums.ElvesType;
+import interfaces.SantaVisitorInterface;
+import interfaces.SantaVisitable;
 import santa.Gift;
 
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
  * Class that stores the data of a child, implements comparable for sorting by
  * id.
  */
-public class Child implements Comparable<Child> {
+public class Child implements Comparable<Child>, SantaVisitable {
     private Integer id;
     private String lastName;
     private String firstName;
@@ -50,7 +52,7 @@ public class Child implements Comparable<Child> {
     /**
      * Applies elf for BLACK and PINK elves
      */
-    public void elfMagic() {
+    public void elfBudgets() {
         if (elf == ElvesType.BLACK) {
             assignedBudget = assignedBudget - assignedBudget * Constants
                     .ELF_MULTIPLIER / Constants.ELF_DIVIDER;
@@ -64,7 +66,6 @@ public class Child implements Comparable<Child> {
     /**
      * Gives gift according to yellow elf.
      */
-    @SuppressWarnings("checkstyle:OperatorWrap")
     public void elfYellow() {
         if (elf == ElvesType.YELLOW) {
             if (receivedGifts.isEmpty()) {
@@ -94,15 +95,15 @@ public class Child implements Comparable<Child> {
     }
 
     public static final class Builder {
-        private final Integer id;
-        private final String lastName;
-        private final String firstName;
-        private final Cities city;
-        private final Integer age;
-        private final List<Category> giftsPreferences;
-        private final Double niceScore;
-        private final List<Double> niceScoreHistory;
-        private final List<Gift> receivedGifts;
+        private Integer id;
+        private String lastName;
+        private String firstName;
+        private Cities city;
+        private Integer age;
+        private List<Category> giftsPreferences;
+        private Double niceScore;
+        private List<Double> niceScoreHistory;
+        private List<Gift> receivedGifts;
         private ElvesType elf;
         private Double niceScoreBonus;
 
@@ -170,7 +171,7 @@ public class Child implements Comparable<Child> {
         this.setAssignedBudget(child.getAssignedBudget());
         this.setNiceScoreHistory(new ArrayList<>(child.getNiceScoreHistory()));
         this.setElf(child.getElf());
-        this.setNiceScoreBonus(child.niceScoreBonus);
+        this.setNiceScoreBonus(child.getNiceScoreBonus());
     }
 
     /**
@@ -341,5 +342,11 @@ public class Child implements Comparable<Child> {
         return getId() - o.getId();
     }
 
+    /**
+     * Method for visitable interface
+     */
+    @Override
+    public void accept(final SantaVisitorInterface v) {
 
+    }
 }

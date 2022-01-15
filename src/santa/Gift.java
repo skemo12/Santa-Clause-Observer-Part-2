@@ -16,11 +16,46 @@ public final class Gift implements Comparable<Gift> {
     private Integer quantity;
 
     public Gift(final String productName, final Double price,
-                final Category category, final Integer quantity) {
+                final Category category) {
         this.setProductName(productName);
         this.setPrice(price);
         this.setCategory(category);
-        this.setQuantity(quantity);
+    }
+    public static final class Builder {
+        private String productName;
+        private Double price;
+        private Category category;
+        @JsonIgnore
+        private Integer quantity;
+
+        public Builder(final String productName, final Double price,
+                       final Category category) {
+            this.productName = productName;
+            this.price = price;
+            this.category = category;
+        }
+
+        /**
+         * Sets elf from builder
+         */
+        public Builder quantity(final Integer quantitySet) {
+            this.quantity = quantitySet;
+            return this;
+        }
+        /**
+         * build method for Builder
+         */
+        public Gift build() {
+            return new Gift(this);
+        }
+    }
+
+    private Gift(final Builder builder) {
+        this.productName = builder.productName;
+        this.price = builder.price;
+        this.category = builder.category;
+        this.quantity = builder.quantity;
+
     }
 
     public String getProductName() {

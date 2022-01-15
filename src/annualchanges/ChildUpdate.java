@@ -20,6 +20,7 @@ public final class ChildUpdate {
         this.setNiceScore(niceScore);
         this.setGiftsPreferences(giftsPreferences);
     }
+
     public static final class Builder {
         private final Integer id;
         private final Double niceScore;

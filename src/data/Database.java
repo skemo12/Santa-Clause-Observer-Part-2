@@ -100,7 +100,7 @@ public final class Database {
         Collections.sort(Database.getInstance().getChildren());
 
         for (final ChildUpdate childUpdate : annualChange.getChildrenUpdates()) {
-            final Child child = Utils.getInstance().getChildById(childUpdate.getId());
+            final Child child = Utils.getChildById(childUpdate.getId());
             if (child != null) {
                 if (childUpdate.getNiceScore() != null) {
                     child.getNiceScoreHistory().add(childUpdate.getNiceScore());

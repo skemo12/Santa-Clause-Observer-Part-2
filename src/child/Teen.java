@@ -1,13 +1,13 @@
 package child;
 
 import interfaces.SantaVisitorInterface;
-import interfaces.Visitable;
+import interfaces.SantaVisitable;
 
 /**
  * Class that extends Child class, visitable by SantaVisitor, represents
  * the teen category of child.
  */
-public final class Teen extends Child implements Visitable {
+public final class Teen extends Child implements SantaVisitable {
 
     public Teen(final Child child) {
         super(child);

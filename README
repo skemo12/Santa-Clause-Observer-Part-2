@@ -1,6 +1,6 @@
 -- Proiect POO -- Paunoiu Darius Alexandru -- 322CD -- Readme
 
-                            --- Etapa 1 ---
+                            --- Etapa 2 ---
 
      - Rezolvarea temei se afle in pachetul src, functia main facand pasii
 principali rezolvarii implemntate (Citirea, afisearea, cele 3 apeluri de baza).
@@ -8,12 +8,21 @@ Fiecare clasa contine JavaDoc pentru o scurta descriere a functionalitati
 acesteia.
 
     - Patterns folosite:
-    Am folosite 2 patternuri in aceasta tema: Singleton si Visitor. Patternul de
-singleton este folosit pentru Database-ul creat si pentru clasa Utils.
-Clasa utils contine functii utile care nu se puteau incadra intr-o alta clasa
-anume. Patternul de visitor este folosit pentru interactiunea din Santa si
-Child. Practic mai intai se creeaza o lista updata de copii, de categorii baby,
-kid si teen dupa care santa viziteaza toti copii din aceea lista.
+    Am folosite 5 patternuri in aceasta tema: Singleton, Visitor, Builder,
+Strategy si Factory. Patternul de singleton este folosit pentru Database-ul
+creat. Fata de etapa 1, am realizat ca clasa Utils nu are de ce sa faca
+design-ul Singleton, asa ca am modificat acest lucru si am facut toate metodele
+clasei Utils statice. Clasa Utils contine functii utile care nu se puteau
+incadra intr-o alta clasa anume. Patternul de visitor este folosit pentru
+interactiunea din Santa si Child. Practic mai intai se creeaza o lista updata
+de copii, de categorii baby, kid si teen dupa care santa viziteaza toti copii
+din aceasta lista. Aceasta lista este creata cu ajutorul clasei ChildFactory,
+care implementeaza design pattern-ul Factory. Aceasta practic realizeaza
+filtrarea copiilor in functie de varsta. Clasa Builder am folosit-o in etapa 2
+pentru a adauga schimbarile aduse (noi parametrii necesari
+(De ex. niceScoreBonus)). Clasele ce implementeaza Builder pattern sunt: Child,
+ChildUpdate si Gift. Pattern-ul Strategy este folosit pentru a implenta cele 3
+strategii, folosindu-se interfata StrategyInterface.
 
     Pentru citirea input-ului mi-am creeat propriul InputLoader, dar pentru
 output am realizat ca este mult mai usor sa se foloseasca un objectMapper din
@@ -21,11 +30,18 @@ Jackson (probabil asa au fost creeate si fisierele referinta).
 
     Flow-ul dintre clase este destul de simplu, Database-ul stockeaza toate si
 are si cateva metode necesare, precum updateDatabaseByYear, saveYear si
-renewDatabase. In fiecare an, se aplica metoda giveGifts al santa-ului din
-database, care imparte toate cadourile copiilor, dupa care se salveaza
-rezultatul pentru anul respectiv in obiectul din database allYearsChildren, dupa
-care se actualizeaza baza de date prin incrementarea varstei copiilor si
-aplicarea modificarilor date de input.
+renewDatabase. In fiecare an, se instantiaza clasa YearSimulation, constructorul
+ei primind strategie din acel an ca parametru si se apeleaza metoda
+simulateYear(), care face toate apelurile si modificare necesare simularii unui
+an, dupa care se salveaza rezultatul pentru anul respectiv in obiectul din
+database allYearsChildren, dupa care se actualizeaza baza de date prin
+incrementarea varstei copiilor si aplicarea modificarilor date de input.
+Flow-ul simularii nu s-a modificat fata foarte mult fata de etapa1, dar datorita
+noilor strategii am simplificat clasa Santa si am creat un pachet nou pentru
+toate strategiile, si am creeat pachetul yearsimulation care contine clasa
+YearSimulation, ce se ocupa de toti pasii necesari simularii.
+    Totodata, proiectul a devenit mai usor de urmarit prin adaugarea acestor noi
+clase.
 
     Toate constantele folosite se gasesc in clasa Constants (data de schelet),
 in ea am adaugat si constantele mele. In main verific daca fisierul de intrare
