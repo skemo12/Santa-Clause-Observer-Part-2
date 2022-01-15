@@ -1,14 +1,14 @@
 package child;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import common.Constants;
 import data.Database;
-import enums.ElvesType;
-import santa.Gift;
 import enums.Category;
 import enums.Cities;
+import enums.ElvesType;
+import santa.Gift;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -33,33 +33,44 @@ public class Child implements Comparable<Child> {
     @JsonIgnore
     private Double niceScoreBonus;
 
+    /**
+     * Adds niceScoreBonus to child averageScore
+     */
     public void addScoreBonus() {
         if (Double.compare(this.getNiceScoreBonus(), 0) == 0) {
             return;
         }
-        double newAverageScore = this.getAverageScore() * this
+        final double newAverageScore = this.getAverageScore() * this
                 .getNiceScoreBonus() / 100;
         this.setAverageScore(this.getAverageScore() + newAverageScore);
-        if (this.getAverageScore() > 10.0) {
-            this.setAverageScore(10.0);
+        if (this.getAverageScore() > Constants.MAX_GRADE) {
+            this.setAverageScore(Constants.MAX_GRADE);
         }
     }
-
+    /**
+     * Applies elf for BLACK and PINK elves
+     */
     public void elfMagic() {
         if (elf == ElvesType.BLACK) {
-            assignedBudget = assignedBudget - assignedBudget * 30 / 100;
+            assignedBudget = assignedBudget - assignedBudget * Constants
+                    .ELF_MULTIPLIER / Constants.ELF_DIVIDER;
         }
         if (elf == ElvesType.PINK) {
-            assignedBudget = assignedBudget + assignedBudget * 30 / 100;
+            assignedBudget = assignedBudget + assignedBudget * Constants
+                    .ELF_MULTIPLIER / Constants.ELF_DIVIDER;
         }
     }
 
-    public void elfYellow(){
+    /**
+     * Gives gift according to yellow elf.
+     */
+    @SuppressWarnings("checkstyle:OperatorWrap")
+    public void elfYellow() {
         if (elf == ElvesType.YELLOW) {
             if (receivedGifts.isEmpty()) {
-                Category favoriteCategory = giftsPreferences.get(0);
+                final Category favoriteCategory = giftsPreferences.get(0);
                 Gift lowestPricedGift = null;
-                for(Gift gift : Database.getInstance()
+                for (final Gift gift : Database.getInstance()
                         .getSanta().getGiftsList()) {
                     if (gift.getCategory() == favoriteCategory) {
                         if (lowestPricedGift == null) {
@@ -72,8 +83,8 @@ public class Child implements Comparable<Child> {
 
                     }
                 }
-                if (lowestPricedGift != null &&
-                        !lowestPricedGift.getQuantity().equals(0)){
+                if (lowestPricedGift != null
+                        && !lowestPricedGift.getQuantity().equals(0)) {
                     lowestPricedGift.setQuantity(
                             lowestPricedGift.getQuantity() - 1);
                     receivedGifts.add(lowestPricedGift);
@@ -82,6 +93,70 @@ public class Child implements Comparable<Child> {
         }
     }
 
+    public static final class Builder {
+        private final Integer id;
+        private final String lastName;
+        private final String firstName;
+        private final Cities city;
+        private final Integer age;
+        private final List<Category> giftsPreferences;
+        private final Double niceScore;
+        private final List<Double> niceScoreHistory;
+        private final List<Gift> receivedGifts;
+        private ElvesType elf;
+        private Double niceScoreBonus;
+
+        public Builder(final Integer id, final String lastName, final String firstName,
+                       final Cities city, final Integer age,
+                       final List<Category> giftsPreferences, final Double niceScore) {
+            this.id = id;
+            this.lastName = lastName;
+            this.firstName = firstName;
+            this.city = city;
+            this.age = age;
+            this.giftsPreferences = giftsPreferences;
+            this.niceScore = niceScore;
+            this.niceScoreHistory = new ArrayList<>();
+            this.niceScoreHistory.add(niceScore);
+            this.receivedGifts = new ArrayList<>();
+        }
+        /**
+         * Sets builder niceScoreBonus
+         */
+        public Builder niceScoreBonus(final Double niceScoreBonusSet) {
+            this.niceScoreBonus = niceScoreBonusSet;
+            return this;
+        }
+        /**
+         * Sets builder elf
+         */
+        public Builder elfType(final ElvesType elfSet) {
+            this.elf = elfSet;
+            return this;
+        }
+
+        /**
+         * build method for Builder
+         */
+        public Child build() {
+            return new Child(this);
+        }
+    }
+
+    private Child(final Builder builder) {
+        this.id = builder.id;
+        this.lastName = builder.lastName;
+        this.firstName = builder.firstName;
+        this.city = builder.city;
+        this.age = builder.age;
+        this.giftsPreferences = builder.giftsPreferences;
+        this.niceScore = builder.niceScore;
+        this.niceScoreHistory = builder.niceScoreHistory;
+        this.receivedGifts = builder.receivedGifts;
+        this.elf = builder.elf;
+        this.niceScoreBonus = builder.niceScoreBonus;
+
+    }
     public Child(final Child child) {
         this.setId(child.getId());
         this.setAge(child.getAge());
@@ -98,171 +173,162 @@ public class Child implements Comparable<Child> {
         this.setNiceScoreBonus(child.niceScoreBonus);
     }
 
-    public Child(final Integer id, final Integer age, final Double niceScore,
-                 final String firstName, final String lastName,
-                 final Cities city, final List<Category>  giftsPreferences,
-                 final ElvesType elf, final Double niceScoreBonus ) {
-        this.setId(id);
-        this.setAge(age);
-        this.setNiceScore(niceScore);
-        this.setFirstName(firstName);
-        this.setLastName(lastName);
-        this.setCity(city);
-        this.setGiftsPreferences(giftsPreferences);
-        this.setNiceScoreHistory(new ArrayList<>());
-        this.getNiceScoreHistory().add(niceScore);
-        this.setReceivedGifts(new ArrayList<>());
-        this.setElf(elf);
-        this.setNiceScoreBonus(niceScoreBonus);
-    }
-
     /**
      * Getter for id
      */
-    public Integer getId() {
+    public final Integer getId() {
         return id;
     }
     /**
      * Setter for id
      */
-    public void setId(final Integer id) {
+    public final void setId(final Integer id) {
         this.id = id;
     }
 
     /**
      * Getter for lastName
      */
-    public String getLastName() {
+    public final String getLastName() {
         return lastName;
     }
     /**
      * Setter for lastName
      */
-    public void setLastName(final String lastName) {
+    public final void setLastName(final String lastName) {
         this.lastName = lastName;
     }
     /**
      * Getter for firstName
      */
-    public String getFirstName() {
+    public final String getFirstName() {
         return firstName;
     }
     /**
      * Setter for firstName
      */
-    public void setFirstName(final String firstName) {
+    public final void setFirstName(final String firstName) {
         this.firstName = firstName;
     }
     /**
      * Getter for city
      */
-    public Cities getCity() {
+    public final Cities getCity() {
         return city;
     }
     /**
      * Setter for city
      */
-    public void setCity(final Cities city) {
+    public final void setCity(final Cities city) {
         this.city = city;
     }
     /**
      * Getter for age
      */
-    public Integer getAge() {
+    public final Integer getAge() {
         return age;
     }
     /**
      * Setter for age
      */
-    public void setAge(final Integer age) {
+    public final void setAge(final Integer age) {
         this.age = age;
     }
     /**
      * Getter for giftsPreferences
      */
-    public List<Category> getGiftsPreferences() {
+    public final List<Category> getGiftsPreferences() {
         return giftsPreferences;
     }
     /**
      * Setter for giftsPreferences
      */
-    public void setGiftsPreferences(final List<Category> giftsPreferences) {
+    public final void setGiftsPreferences(final List<Category> giftsPreferences) {
         this.giftsPreferences = giftsPreferences;
     }
     /**
      * Getter for niceScore
      */
-    public Double getNiceScore() {
+    public final Double getNiceScore() {
         return niceScore;
     }
     /**
      * Setter for niceScore
      */
-    public void setNiceScore(final Double niceScore) {
+    public final void setNiceScore(final Double niceScore) {
         this.niceScore = niceScore;
     }
     /**
      * Getter for averageScore
      */
-    public Double getAverageScore() {
+    public final Double getAverageScore() {
         return averageScore;
     }
     /**
      * Setter for averageScore
      */
-    public void setAverageScore(final Double averageScore) {
+    public final void setAverageScore(final Double averageScore) {
         this.averageScore = averageScore;
     }
     /**
      * Getter for niceScoreHistory
      */
-    public List<Double> getNiceScoreHistory() {
+    public final List<Double> getNiceScoreHistory() {
         return niceScoreHistory;
     }
     /**
      * Setter for niceScoreHistory
      */
-    public void setNiceScoreHistory(final List<Double> niceScoreHistory) {
+    public final void setNiceScoreHistory(final List<Double> niceScoreHistory) {
         this.niceScoreHistory = niceScoreHistory;
     }
     /**
      * Getter for assignedBudget
      */
-    public Double getAssignedBudget() {
+    public final Double getAssignedBudget() {
         return assignedBudget;
     }
     /**
      * Setter for assignedBudget
      */
-    public void setAssignedBudget(final Double assignedBudget) {
+    public final void setAssignedBudget(final Double assignedBudget) {
+
         this.assignedBudget = assignedBudget;
     }
     /**
      * Getter for receivedGifts
      */
-    public List<Gift> getReceivedGifts() {
+    public final List<Gift> getReceivedGifts() {
         return receivedGifts;
     }
     /**
      * Setter for receivedGifts
      */
-    public void setReceivedGifts(final List<Gift> receivedGifts) {
+    public final void setReceivedGifts(final List<Gift> receivedGifts) {
         this.receivedGifts = receivedGifts;
     }
-
-    public ElvesType getElf() {
+    /**
+     * Getter for elf
+     */
+    public final ElvesType getElf() {
         return elf;
     }
-
-    public void setElf(ElvesType elf) {
+    /**
+     * Setter for elf
+     */
+    public final void setElf(final ElvesType elf) {
         this.elf = elf;
     }
-
-    public Double getNiceScoreBonus() {
+    /**
+     * Getter for niceScoreBonus
+     */
+    public final Double getNiceScoreBonus() {
         return niceScoreBonus;
     }
-
-    public void setNiceScoreBonus(Double niceScoreBonus) {
+    /**
+     * Setter for niceScoreBonus
+     */
+    public final void setNiceScoreBonus(final Double niceScoreBonus) {
         this.niceScoreBonus = niceScoreBonus;
     }
 

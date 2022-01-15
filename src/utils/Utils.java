@@ -33,7 +33,7 @@ public final class Utils {
      * @param id wanted id to find
      */
     public Child getChildById(final Integer id) {
-        for (Child child : Database.getInstance().getChildren()) {
+        for (final Child child : Database.getInstance().getChildren()) {
             if (child.getId().equals(id)) {
                 return child;
             }
@@ -46,7 +46,7 @@ public final class Utils {
      */
     public int getIndexOfChild(final Child child) {
         for (int i = 0; i < Database.getInstance().getChildren().size(); i++) {
-            Child childCurrent = Database.getInstance().getChildren().get(i);
+            final Child childCurrent = Database.getInstance().getChildren().get(i);
             if (Objects.equals(childCurrent.getId(), child.getId())) {
                 return i;
             }
@@ -95,8 +95,8 @@ public final class Utils {
      * @param list list to be converted
      */
     public List<Category> stringListToCategoryList(final List<String> list) {
-        List<Category> categories = new ArrayList<>();
-        for (String element : list) {
+        final List<Category> categories = new ArrayList<>();
+        for (final String element : list) {
             categories.add(Utils.getInstance().stringToCategory(element));
         }
         return categories;
@@ -106,7 +106,7 @@ public final class Utils {
      * Converts string to Elf ENUM.
      * @param elf string to be converted
      */
-    public ElvesType stringToElf(String elf) {
+    public ElvesType stringToElf(final String elf) {
         return switch (elf) {
             case "yellow" -> ElvesType.YELLOW;
             case "black" -> ElvesType.BLACK;
@@ -120,7 +120,7 @@ public final class Utils {
      * Converts string to Elf ENUM.
      * @param strategy string to be converted
      */
-    public CityStrategyEnum stringToStrategy(String strategy) {
+    public CityStrategyEnum stringToStrategy(final String strategy) {
         return switch (strategy) {
             case "niceScoreCity" -> CityStrategyEnum.NICE_SCORE_CITY;
             case "id" -> CityStrategyEnum.ID;

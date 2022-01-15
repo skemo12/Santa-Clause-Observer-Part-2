@@ -13,8 +13,8 @@ public final class AnnualChildren {
 
     public AnnualChildren(final List<Child> children) {
         this.setChildren(new ArrayList<>());
-        for (Child child : children) {
-            Child newChild = new Child(child);
+        for (final Child child : children) {
+            final Child newChild = new Child(child);
             this.getChildren().add(newChild);
         }
 

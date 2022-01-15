@@ -51,7 +51,7 @@ public final class Gift implements Comparable<Gift> {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(final Integer quantity) {
         this.quantity = quantity;
     }
 

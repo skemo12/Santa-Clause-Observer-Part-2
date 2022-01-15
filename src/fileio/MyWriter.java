@@ -30,7 +30,7 @@ public final class MyWriter {
             this.getMapper().writeValue(
                     new File(getFilename()), Database
                             .getInstance().getAllYearsChildren());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }

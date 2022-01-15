@@ -87,15 +87,15 @@ public class Checker {
      *          if the two files are equal or not
      */
     private static boolean checkOutput(final Integer testNumber) {
-        ObjectMapper mapper = new ObjectMapper();
+        final ObjectMapper mapper = new ObjectMapper();
 
         try {
-            JsonNode output = mapper.readTree(new File("output/out_" + testNumber + ".json"));
-            JsonNode ref = mapper.readTree(new File("ref/ref_test" + testNumber + ".json"));
+            final JsonNode output = mapper.readTree(new File("output/out_" + testNumber + ".json"));
+            final JsonNode ref = mapper.readTree(new File("ref/ref_test" + testNumber + ".json"));
 
             return output.equals(ref);
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         return false;

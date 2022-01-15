@@ -4,16 +4,22 @@ import child.Baby;
 import child.Child;
 import child.Kid;
 import child.Teen;
+import common.Constants;
 import data.Database;
 import enums.Category;
 import enums.Cities;
 import enums.CityStrategyEnum;
 import interfaces.SantaVisitorInterface;
 import utils.Utils;
-import common.Constants;
 
-import javax.xml.stream.events.EntityReference;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.ListIterator;
+import java.util.Map;
+
 
 /**
  * Class that stores the data of Santa, implements SantaVisitorInterface
@@ -64,8 +70,8 @@ public final class Santa implements SantaVisitorInterface {
      */
     public void updateBudgetUnit() {
         double sum = 0;
-        List<Child> children = Database.getInstance().getChildren();
-        for (Child child : children) {
+        final List<Child> children = Database.getInstance().getChildren();
+        for (final Child child : children) {
             sum += child.getAverageScore();
         }
         budgetUnit = santaBudget / sum;
@@ -74,10 +80,10 @@ public final class Santa implements SantaVisitorInterface {
     /**
      * Gives every child gifts.
      */
-    public void giveGifts(CityStrategyEnum strategyEnum) {
+    public void giveGifts(final CityStrategyEnum strategyEnum) {
         calculateScores();
-        List<Child> children = Database.getInstance().getChildren();
-        for (Child child : children) {
+        final List<Child> children = Database.getInstance().getChildren();
+        for (final Child child : children) {
             child.getReceivedGifts().clear();
             child.addScoreBonus();
         }
@@ -88,24 +94,24 @@ public final class Santa implements SantaVisitorInterface {
                     .compare(o2.getAverageScore(), o1.getAverageScore()), 0));
         }
         if (strategyEnum == CityStrategyEnum.NICE_SCORE_CITY) {
-            newMethod();
+            niceCityScoreStrategy();
             return;
         }
 
-        for (Child child : children) {
+        for (final Child child : children) {
             double budgetChild = budgetUnit * child.getAverageScore();
             child.setAssignedBudget(budgetChild);
             child.elfMagic();
             budgetChild = child.getAssignedBudget();
             double currBudget = 0.0;
-            for (Category giftPreferences : child.getGiftsPreferences()) {
+            for (final Category giftPreferences : child.getGiftsPreferences()) {
                 if (Double.compare(currBudget, budgetChild) == 0) {
                     break;
                 }
-                List<Gift> giftsPerCategory = new ArrayList<>();
-                for (Gift gift : giftsList) {
+                final List<Gift> giftsPerCategory = new ArrayList<>();
+                for (final Gift gift : giftsList) {
                     if (gift.getCategory() == giftPreferences) {
-                        double auxBudget = gift.getPrice() + currBudget;
+                        final double auxBudget = gift.getPrice() + currBudget;
                         if (Double.compare(auxBudget, budgetChild) < 0) {
                             giftsPerCategory.add(gift);
 
@@ -117,8 +123,8 @@ public final class Santa implements SantaVisitorInterface {
                 }
                 if (!giftsPerCategory.isEmpty()) {
                     Collections.sort(giftsPerCategory);
-                    for (Gift gift : giftsPerCategory) {
-                        if (gift.getQuantity() != 0){
+                    for (final Gift gift : giftsPerCategory) {
+                        if (gift.getQuantity() != 0) {
                             child.getReceivedGifts().add(gift);
                             currBudget += gift.getPrice();
                             gift.setQuantity(gift.getQuantity() - 1);
@@ -140,12 +146,12 @@ public final class Santa implements SantaVisitorInterface {
      */
     public void calculateScores() {
 
-        List<Child> updatedChildren = filterChildByAge();
-        ListIterator<Child> updatedChildListIterator = updatedChildren
+        final List<Child> updatedChildren = filterChildByAge();
+        final ListIterator<Child> updatedChildListIterator = updatedChildren
                 .listIterator();
 
         while (updatedChildListIterator.hasNext()) {
-            Child child = updatedChildListIterator.next();
+            final Child child = updatedChildListIterator.next();
             if (child.getAge() < Constants.BABY) {
                 ((Baby) child).accept(this);
             } else if (child.getAge() < Constants.KID) {
@@ -157,8 +163,8 @@ public final class Santa implements SantaVisitorInterface {
             }
         }
 
-        for (Child updatedChild : updatedChildren) {
-            int index = Utils.getInstance().getIndexOfChild(updatedChild);
+        for (final Child updatedChild : updatedChildren) {
+            final int index = Utils.getInstance().getIndexOfChild(updatedChild);
             Database.getInstance().getChildren().set(index, updatedChild);
         }
 
@@ -169,12 +175,12 @@ public final class Santa implements SantaVisitorInterface {
      */
     public List<Child> filterChildByAge() {
 
-        List<Child> updatedChildren = new ArrayList<>();
-        ListIterator<Child> childListIterator = Database.getInstance()
+        final List<Child> updatedChildren = new ArrayList<>();
+        final ListIterator<Child> childListIterator = Database.getInstance()
                 .getChildren().listIterator();
 
         while (childListIterator.hasNext()) {
-            Child child = childListIterator.next();
+            final Child child = childListIterator.next();
             if (child.getAge() < Constants.BABY) {
                 updatedChildren.add(new Baby(child));
             } else if (child.getAge() < Constants.KID) {
@@ -187,48 +193,54 @@ public final class Santa implements SantaVisitorInterface {
         }
         return updatedChildren;
     }
+    /**
+     * Returns sorted cities list by cities average score
+     */
     public List<Cities> sortCities() {
-        HashMap<Cities, Double> citiesScoreMap = new HashMap<>();
-        List<Cities> sortedCities = new ArrayList<>();
-        for (Child child : Database.getInstance().getChildren()) {
+        final HashMap<Cities, Double> citiesScoreMap = new HashMap<>();
+        final List<Cities> sortedCities = new ArrayList<>();
+
+        for (final Child child : Database.getInstance().getChildren()) {
             if (!citiesScoreMap.containsKey(child.getCity())) {
                 citiesScoreMap.put(child.getCity(), 0.0);
+                sortedCities.add(child.getCity());
             }
         }
-        for (Map.Entry<Cities, Double> mapEntry : citiesScoreMap.entrySet()) {
+        for (final Map.Entry<Cities, Double> mapEntry : citiesScoreMap.entrySet()) {
             Double average = 0.0;
             Integer divider = 0;
-            for (Child child : Database.getInstance().getChildren()) {
+            for (final Child child : Database.getInstance().getChildren()) {
                 if (child.getCity() == mapEntry.getKey()) {
                     average += child.getAverageScore();
                     divider++;
                 }
             }
-            average = average / divider ;
+            average = average / divider;
             mapEntry.setValue(average);
         }
-        while (!citiesScoreMap.isEmpty()) {
-            Map.Entry<Cities, Double> maxEntry = null;
-            for (Map.Entry<Cities, Double> mapEntry : citiesScoreMap.entrySet()) {
-                if (maxEntry == null || mapEntry.getValue().compareTo(maxEntry.getValue()) > 0)
-                {
-                    maxEntry = mapEntry;
-                }
+        sortedCities.sort((o1, o2) -> {
+            if (citiesScoreMap.get(o1) > citiesScoreMap.get(o2)) {
+                return -1;
+            } else if (citiesScoreMap.get(o1) < citiesScoreMap.get(o2)) {
+                return 1;
+            } else {
+                return o1.name().compareToIgnoreCase(o2.name());
             }
-            sortedCities.add(maxEntry.getKey());
-            citiesScoreMap.remove(maxEntry.getKey());
-        }
+        });
 
         return sortedCities;
     }
 
-    public LinkedHashMap<Cities, List<Child>> citiesStrategy() {
-        LinkedHashMap<Cities, List<Child>> map = new LinkedHashMap<>();
-        List<Cities> sortedCities = sortCities();
+    /**
+     * Calculate cities scores
+     */
+    public LinkedHashMap<Cities, List<Child>> citiesScores() {
+        final LinkedHashMap<Cities, List<Child>> map = new LinkedHashMap<>();
+        final List<Cities> sortedCities = sortCities();
 
-        for (Cities city : sortedCities) {
-            List<Child> children = new ArrayList<>();
-            for (Child child : Database.getInstance().getChildren()) {
+        for (final Cities city : sortedCities) {
+            final List<Child> children = new ArrayList<>();
+            for (final Child child : Database.getInstance().getChildren()) {
                 if (child.getCity() == city) {
                     children.add(child);
                 }
@@ -238,26 +250,28 @@ public final class Santa implements SantaVisitorInterface {
 
         return map;
     }
-
-    public void newMethod() {
-        LinkedHashMap<Cities, List<Child>> map = citiesStrategy();
+    /**
+     * Applies niceCityScore strategy
+     */
+    public void niceCityScoreStrategy() {
+        final LinkedHashMap<Cities, List<Child>> map = citiesScores();
         updateBudgetUnit();
-        for (Map.Entry<Cities, List<Child>> entry : map.entrySet()) {
-            List<Child> children = entry.getValue();
-            for (Child child : children) {
+        for (final Map.Entry<Cities, List<Child>> entry : map.entrySet()) {
+            final List<Child> children = entry.getValue();
+            for (final Child child : children) {
                 double budgetChild = budgetUnit * child.getAverageScore();
                 child.setAssignedBudget(budgetChild);
                 child.elfMagic();
                 budgetChild = child.getAssignedBudget();
                 double currBudget = 0.0;
-                for (Category giftPreferences : child.getGiftsPreferences()) {
+                for (final Category giftPreferences : child.getGiftsPreferences()) {
                     if (Double.compare(currBudget, budgetChild) == 0) {
                         break;
                     }
-                    List<Gift> giftsPerCategory = new ArrayList<>();
-                    for (Gift gift : giftsList) {
+                    final List<Gift> giftsPerCategory = new ArrayList<>();
+                    for (final Gift gift : giftsList) {
                         if (gift.getCategory() == giftPreferences) {
-                            double auxBudget = gift.getPrice() + currBudget;
+                            final double auxBudget = gift.getPrice() + currBudget;
                             if (Double.compare(auxBudget, budgetChild) < 0) {
                                 giftsPerCategory.add(gift);
 
@@ -269,8 +283,8 @@ public final class Santa implements SantaVisitorInterface {
                     }
                     if (!giftsPerCategory.isEmpty()) {
                         Collections.sort(giftsPerCategory);
-                        for (Gift gift : giftsPerCategory) {
-                            if (gift.getQuantity() != 0){
+                        for (final Gift gift : giftsPerCategory) {
+                            if (gift.getQuantity() != 0) {
                                 child.getReceivedGifts().add(gift);
                                 currBudget += gift.getPrice();
                                 gift.setQuantity(gift.getQuantity() - 1);
@@ -297,7 +311,7 @@ public final class Santa implements SantaVisitorInterface {
     public void visit(final Kid child) {
         if (child.getNiceScoreHistory() != null) {
             Double average = 0.0;
-            for (Double score : child.getNiceScoreHistory()) {
+            for (final Double score : child.getNiceScoreHistory()) {
                 average += score;
             }
             average = average / child.getNiceScoreHistory().size();
@@ -311,8 +325,8 @@ public final class Santa implements SantaVisitorInterface {
             double average = 0.0;
             double divider = 0.0;
             for (int i = 0; i < child.getNiceScoreHistory().size(); i++) {
-                Double score = child.getNiceScoreHistory().get(i);
-                int index = i + 1;
+                final Double score = child.getNiceScoreHistory().get(i);
+                final int index = i + 1;
                 average += score * index;
                 divider += index;
             }

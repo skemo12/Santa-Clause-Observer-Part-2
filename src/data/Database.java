@@ -83,36 +83,36 @@ public final class Database {
      */
     public void updateDatabaseByYear(final int i) {
         increaseChildrenAge();
-        AnnualChanges annualChange = Database.getInstance()
+        final AnnualChanges annualChange = Database.getInstance()
                 .getAnnualChanges().get(i);
 
         if (annualChange.getNewSantaBudget() != null) {
             Database.getInstance().getSanta()
                     .setSantaBudget(annualChange.getNewSantaBudget());
         }
-        for (Gift gift : annualChange.getNewGifts()) {
+        for (final Gift gift : annualChange.getNewGifts()) {
             Database.getInstance().getSanta().getGiftsList().add(gift);
         }
 
-        for (Child child : annualChange.getNewChildren()) {
+        for (final Child child : annualChange.getNewChildren()) {
             Database.getInstance().getChildren().add(child);
         }
         Collections.sort(Database.getInstance().getChildren());
 
-        for (ChildUpdate childUpdate : annualChange.getChildrenUpdates()) {
-            Child child = Utils.getInstance().getChildById(childUpdate.getId());
+        for (final ChildUpdate childUpdate : annualChange.getChildrenUpdates()) {
+            final Child child = Utils.getInstance().getChildById(childUpdate.getId());
             if (child != null) {
                 if (childUpdate.getNiceScore() != null) {
                     child.getNiceScoreHistory().add(childUpdate.getNiceScore());
                     child.setNiceScore(childUpdate.getNiceScore());
                 }
-                List<Category> giftPrefs = new ArrayList<>();
-                for (Category gift : childUpdate.getGiftsPreferences()) {
+                final List<Category> giftPrefs = new ArrayList<>();
+                for (final Category gift : childUpdate.getGiftsPreferences()) {
                     if (!giftPrefs.contains(gift)) {
                         giftPrefs.add(gift);
                     }
                 }
-                for (Category gift : child.getGiftsPreferences()) {
+                for (final Category gift : child.getGiftsPreferences()) {
                     if (!giftPrefs.contains(gift)) {
                         giftPrefs.add(gift);
                     }
@@ -126,7 +126,7 @@ public final class Database {
      * Increases the ages of all children.
      */
     public void increaseChildrenAge() {
-        for (Child child : Database.getInstance().getChildren()) {
+        for (final Child child : Database.getInstance().getChildren()) {
             child.setAge(child.getAge() + 1);
         }
     }
